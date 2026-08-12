@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HUMANOID-CORE // MySQL User Management Interface</title>
+  
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Custom Futuristic Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Cybernetic Grid & Matrix Background Canvas -->
+  <div class="cyber-background">
+    <div class="grid-overlay"></div>
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="app-container">
+
+    <!-- Top Navigation & System HUD Header -->
+    <header class="hud-header">
+      <div class="brand-section">
+        <div class="core-logo">
+          <i class="fa-solid fa-robot pulse-icon"></i>
+        </div>
+        <div class="brand-titles">
+          <h1 class="glow-text">HUMANOID-CORE <span class="badge-v">v2.5</span></h1>
+          <p class="subtitle">REST API User Management System &bull; MySQL Relational Persistence Engine</p>
+        </div>
+      </div>
+
+      <div class="hud-controls">
+        <div class="status-pill" id="dbStatusPill">
+          <span class="status-dot"></span>
+          <span id="dbStatusText">CHECKING MYSQL...</span>
+        </div>
+
+        <button class="cyber-btn btn-secondary" id="audioToggleBtn" title="Toggle Sci-Fi SFX Audio Feedback">
+          <i class="fa-solid fa-volume-high"></i> SFX: <span id="sfxState">ON</span>
+        </button>
+
+        <button class="cyber-btn btn-seed" id="seedDbBtn" title="Seed Default Sample Data to MySQL">
+          <i class="fa-solid fa-bolt"></i> SEED DATA
+        </button>
+      </div>
+    </header>
+
+    <!-- Humanoid Bio-Core Telemetry Section -->
+    <section class="telemetry-grid">
+      <!-- Humanoid Interactive Node Canvas Card -->
+      <div class="glass-card bio-core-card">
+        <div class="card-header">
+          <h3><i class="fa-solid fa-brain"></i> HUMANOID BIO-ENTITY NODE MAP</h3>
+          <span class="card-tag">SYSTEM TELEMETRY</span>
+        </div>
+        <div class="humanoid-visualizer-container">
+          <div class="humanoid-canvas-wrapper">
+            <svg viewBox="0 0 300 320" class="humanoid-svg">
+              <!-- Glow Filters -->
+              <defs>
+                <filter id="neon-glow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="6" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+
+              <!-- Cybernetic Skeleton Outline -->
+              <!-- Head -->
+              <circle cx="150" cy="50" r="32" class="cyber-line head-node" filter="url(#neon-glow)" />
+              <path d="M 140 45 L 146 45 M 154 45 L 160 45" class="eye-sensors" />
+              <!-- Neck -->
+              <line x1="150" y1="82" x2="150" y2="100" class="cyber-line" />
+              <!-- Shoulders & Torso -->
+              <path d="M 90 110 L 210 110 L 180 200 L 120 200 Z" class="cyber-line chest-plate" />
+              <!-- Spine Center Core -->
+              <circle cx="150" cy="140" r="14" class="core-node pulse-node" filter="url(#neon-glow)" />
+              <!-- Limbs -->
+              <line x1="90" y1="110" x2="50" y2="190" class="cyber-line" />
+              <line x1="210" y1="110" x2="250" y2="190" class="cyber-line" />
+              <line x1="130" y1="200" x2="110" y2="290" class="cyber-line" />
+              <line x1="170" y1="200" x2="190" y2="290" class="cyber-line" />
+
+              <!-- Interactive Node Points -->
+              <g class="interactive-node" id="nodeSql">
+                <circle cx="150" cy="50" r="8" class="node-point" />
+                <text x="150" y="25" text-anchor="middle" class="node-label">SQL ENGINE</text>
+              </g>
+
+              <g class="interactive-node" id="nodeBiometric">
+                <circle cx="150" cy="140" r="8" class="node-point active-core" />
+                <text x="195" y="145" text-anchor="start" class="node-label">BIOMETRIC VAULT</text>
+              </g>
+
+              <g class="interactive-node" id="nodeRest">
+                <circle cx="50" cy="190" r="6" class="node-point" />
+                <text x="40" y="215" text-anchor="middle" class="node-label">REST API</text>
+              </g>
+
+              <g class="interactive-node" id="nodeSync">
+                <circle cx="250" cy="190" r="6" class="node-point" />
+                <text x="260" y="215" text-anchor="middle" class="node-label">SYNC MATRIX</text>
+              </g>
+            </svg>
+          </div>
+          <div class="bio-node-info">
+            <div class="info-row">
+              <span>Database Engine:</span> <strong id="infoDbEngine">MySQL 8.0 InnoDB</strong>
+            </div>
+            <div class="info-row">
+              <span>Connection Pool:</span> <strong id="infoPool">10 Connections (Active)</strong>
+            </div>
+            <div class="info-row">
+              <span>Query Latency:</span> <strong id="infoLatency" class="neon-text">-- ms</strong>
+            </div>
+            <div class="info-row">
+              <span>Biometric Vault:</span> <strong class="cyan-text">SHA256 Encrypted</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Telemetry Stats Cards Grid -->
+      <div class="stats-cards-grid">
+        <div class="glass-card stat-card card-total">
+          <div class="stat-icon"><i class="fa-solid fa-users-gear"></i></div>
+          <div class="stat-content">
+            <span class="stat-label">TOTAL HUMANOIDS</span>
+            <h2 id="statTotal" class="stat-number">0</h2>
+            <span class="stat-sub">Persisted in MySQL</span>
+          </div>
+        </div>
+
+        <div class="glass-card stat-card card-active">
+          <div class="stat-icon"><i class="fa-solid fa-circle-check"></i></div>
+          <div class="stat-content">
+            <span class="stat-label">ACTIVE UNITS</span>
+            <h2 id="statActive" class="stat-number green-glow">0</h2>
+            <span class="stat-sub">Online & Operational</span>
+          </div>
+        </div>
+
+        <div class="glass-card stat-card card-sync">
+          <div class="stat-icon"><i class="fa-solid fa-rotate"></i></div>
+          <div class="stat-content">
+            <span class="stat-label">SYNCHRONIZED CORES</span>
+            <h2 id="statSync" class="stat-number purple-glow">0</h2>
+            <span class="stat-sub">Neural Matrix Linked</span>
+          </div>
+        </div>
+
+        <div class="glass-card stat-card card-quarantined">
+          <div class="stat-icon"><i class="fa-solid fa-shield-cat"></i></div>
+          <div class="stat-content">
+            <span class="stat-label">INACTIVE / QUARANTINED</span>
+            <h2 id="statInactive" class="stat-number amber-glow">0</h2>
+            <span class="stat-sub">Access Restricted</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Content: Controls & Entity Matrix Table -->
+    <main class="main-matrix-section">
+      <div class="glass-card matrix-card">
+        
+        <!-- Action & Filter Bar -->
+        <div class="matrix-toolbar">
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="searchInput" placeholder="Search entity by username, email, biometric hash...">
+            <button id="clearSearchBtn" class="icon-btn" title="Clear Search"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+
+          <div class="filter-group">
+            <div class="select-wrapper">
+              <label for="roleFilter"><i class="fa-solid fa-user-shield"></i> Role:</label>
+              <select id="roleFilter">
+                <option value="All">All Roles</option>
+                <option value="Admin">Admin</option>
+                <option value="Humanoid-Core">Humanoid-Core</option>
+                <option value="Cyber-Unit">Cyber-Unit</option>
+                <option value="Android">Android</option>
+                <option value="User">User</option>
+              </select>
+            </div>
+
+            <div class="select-wrapper">
+              <label for="statusFilter"><i class="fa-solid fa-signal"></i> Status:</label>
+              <select id="statusFilter">
+                <option value="All">All Statuses</option>
+                <option value="Active">Active</option>
+                <option value="Synchronized">Synchronized</option>
+                <option value="Inactive">Inactive</option>
+                <option value="Quarantined">Quarantined</option>
+              </select>
+            </div>
+
+            <button class="cyber-btn btn-primary" id="openAddModalBtn">
+              <i class="fa-solid fa-plus"></i> INITIALIZE ENTITY
+            </button>
+          </div>
+        </div>
+
+        <!-- Entity Table -->
+        <div class="table-responsive">
+          <table class="cyber-table" id="usersTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>ENTITY / BIOMETRIC</th>
+                <th>FULL NAME</th>
+                <th>EMAIL ADDRESS</th>
+                <th>ROLE</th>
+                <th>STATUS</th>
+                <th>SYNCHRONIZED AT</th>
+                <th>ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody id="usersTbody">
+              <tr>
+                <td colspan="8" class="text-center loading-cell">
+                  <i class="fa-solid fa-spinner fa-spin"></i> Synchronizing with MySQL Database...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination & Footer Stats -->
+        <div class="matrix-footer">
+          <span class="footer-info">Showing <strong id="showingCount">0</strong> of <strong id="totalCount">0</strong> humanoids</span>
+          <div class="refresh-indicator">
+            <button class="cyber-btn btn-secondary icon-only" id="refreshBtn" title="Refresh Table Data">
+              <i class="fa-solid fa-arrows-rotate"></i>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- Live SQL Query Stream Terminal Panel -->
+    <section class="glass-card sql-console-card">
+      <div class="console-header">
+        <div class="console-title">
+          <i class="fa-solid fa-terminal"></i> LIVE MYSQL QUERY STREAM & REST PAYLOAD INSPECTOR
+        </div>
+        <div class="console-actions">
+          <button class="icon-btn" id="clearLogsBtn" title="Clear Query Logs"><i class="fa-solid fa-trash-can"></i></button>
+        </div>
+      </div>
+      <div class="console-body" id="sqlConsole">
+        <div class="log-entry system-log">
+          <span class="log-time">[SYSTEM]</span> Express REST Server initialized. Listening to MySQL Query Stream...
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Create/Edit Entity Modal Dialog -->
+  <div class="modal-backdrop" id="entityModal">
+    <div class="glass-card modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle"><i class="fa-solid fa-user-plus"></i> INITIALIZE NEW HUMANOID ENTITY</h3>
+        <button class="close-btn" id="closeModalBtn">&times;</button>
+      </div>
+      
+      <form id="entityForm" novalidate>
+        <input type="hidden" id="entityId" value="">
+        
+        <div class="form-grid">
+          <!-- Username -->
+          <div class="form-group">
+            <label for="inputUsername"><i class="fa-solid fa-user"></i> Username *</label>
+            <input type="text" id="inputUsername" placeholder="e.g. cyber_sentry_9" required>
+            <span class="error-msg" id="errUsername"></span>
+          </div>
+
+          <!-- Full Name -->
+          <div class="form-group">
+            <label for="inputFullName"><i class="fa-solid fa-id-card"></i> Full Name *</label>
+            <input type="text" id="inputFullName" placeholder="e.g. Commander Sarah Connor" required>
+            <span class="error-msg" id="errFullName"></span>
+          </div>
+
+          <!-- Email -->
+          <div class="form-group">
+            <label for="inputEmail"><i class="fa-solid fa-envelope"></i> Email Address *</label>
+            <input type="email" id="inputEmail" placeholder="e.g. sarah@cyber.io" required>
+            <span class="error-msg" id="errEmail"></span>
+          </div>
+
+          <!-- Biometric ID -->
+          <div class="form-group">
+            <label for="inputBiometric"><i class="fa-solid fa-fingerprint"></i> Biometric Hash</label>
+            <input type="text" id="inputBiometric" placeholder="Auto-generated if left empty (e.g. BIO-8890-SC)">
+            <span class="error-msg" id="errBiometric"></span>
+          </div>
+
+          <!-- Role -->
+          <div class="form-group">
+            <label for="inputRole"><i class="fa-solid fa-shield-halved"></i> Unit Designation (Role)</label>
+            <select id="inputRole">
+              <option value="User">User</option>
+              <option value="Admin">Admin</option>
+              <option value="Cyber-Unit">Cyber-Unit</option>
+              <option value="Android">Android</option>
+              <option value="Humanoid-Core">Humanoid-Core</option>
+            </select>
+          </div>
+
+          <!-- Status -->
+          <div class="form-group">
+            <label for="inputStatus"><i class="fa-solid fa-power-off"></i> Core Status</label>
+            <select id="inputStatus">
+              <option value="Active">Active</option>
+              <option value="Synchronized">Synchronized</option>
+              <option value="Inactive">Inactive</option>
+              <option value="Quarantined">Quarantined</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="cyber-btn btn-secondary" id="cancelModalBtn">CANCEL</button>
+          <button type="submit" class="cyber-btn btn-primary" id="saveEntityBtn">
+            <i class="fa-solid fa-floppy-disk"></i> SAVE TO MYSQL
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Application Logic JS -->
+  <script src="js/app.js"></script>
+</body>
+</html>

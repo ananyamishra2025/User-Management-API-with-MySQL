@@ -1,0 +1,29 @@
+{
+  "name": "user-management-api-mysql",
+  "version": "1.0.0",
+  "description": "User Management REST API integrated with MySQL database and Humanoid UI/UX Control Interface",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "express",
+    "mysql",
+    "rest-api",
+    "humanoid-ui",
+    "user-management"
+  ],
+  "author": "Antigravity",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mysql2": "^3.9.8",
+    "sqlite3": "^6.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
