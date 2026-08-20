@@ -1,66 +1,70 @@
-# User Management REST API with MySQL Persistence & Humanoid UI/UX
+# User Management REST API with Relational SQL Database & Modern Dashboard
 
-A high-performance Node.js & Express REST API integrated with MySQL for persisting user data, featuring a futuristic Humanoid Cyber-Entity Control Hub UI/UX interface.
-
----
-
-## 🌟 Key Features
-
-1. **MySQL Database Persistence**:
-   - Automated database (`user_management_db`) and table (`users`) auto-creation on startup.
-   - Connection pooling using `mysql2/promise`.
-   - Indexed fields (`role`, `status`, `email`, `biometric_id`) for optimal search & query performance.
-
-2. **Humanoid Cyber-Entity UI/UX Control Interface**:
-   - Obsidian dark theme with glassmorphism cards and cybernetic neon accents (`#00f3ff`, `#00ff9d`, `#9d4edd`).
-   - **Interactive Humanoid Bio-Core Node Visualizer** SVG canvas diagram.
-   - **Live SQL Query Stream & REST Inspector** terminal panel.
-   - **Web Audio API Synth**: Subtle sci-fi audio click & beep feedback on user interaction.
-   - Full CRUD modal dialogs, search with debounce, role/status filters, and live telemetry cards.
-
-3. **Production Readiness**:
-   - Environment variable support via `.env` and `.env.example`.
-   - `.gitignore` for hiding credentials and node dependencies.
-   - Input validation, duplicate constraints checking (username, email, biometric_id), and centralized error handling middleware.
+A production-ready Node.js & Express REST API integrated with a relational SQL database (MySQL / SQLite) to persist user data, featuring a clean, responsive, modern web dashboard.
 
 ---
 
-## 📁 Directory Structure
+## 🚀 Key Features
+
+- **Relational SQL Database Persistence**:
+  - Automatically creates database (`user_management_db`) and `users` table on startup.
+  - Connection pooling with `mysql2/promise` and `.env` configuration.
+  - Fail-safe dual SQL engine: automatically uses SQLite (`user_management.sqlite`) if local MySQL credentials are not configured, ensuring 100% out-of-the-box uptime.
+  - Indexed fields (`role`, `status`, `email`, `biometric_id`) for high-performance query execution.
+
+- **Clean Enterprise Admin Dashboard**:
+  - Human-architected modern dark UI using Inter typography and CSS variables.
+  - Real-time telemetry cards (total registered users, active count, admin count, query latency).
+  - Search input with debounce and multi-attribute filters (Role, Status).
+  - Modal dialog for adding and editing user records with client and server validation.
+  - Live **SQL Execution Log & REST Payload Inspector** drawer.
+
+- **Production-Grade API Architecture**:
+  - Full RESTful CRUD endpoints (`GET`, `POST`, `PUT`, `DELETE`).
+  - System health monitor (`GET /api/health`) and telemetry stats (`GET /api/stats`).
+  - Sample data database seeder endpoint (`POST /api/seed`).
+  - Environment variable management (`.env` and `.env.example`).
+  - Centralized error handling and malformed JSON syntax protection.
+
+---
+
+## 📁 Repository Structure
 
 ```
 ├── config/
-│   └── db.js                 # MySQL pool connection and auto-initialization
+│   └── db.js                 # Database connection pool and schema initialization
 ├── controllers/
-│   └── userController.js     # REST API business logic & HTTP response handlers
+│   └── userController.js     # REST API business logic and HTTP handlers
 ├── models/
-│   └── userModel.js          # SQL database query builder & schema operations
+│   └── userModel.js          # SQL database query builder (CRUD & telemetry)
 ├── routes/
 │   └── userRoutes.js         # Express router mapping API endpoints
 ├── sql/
-│   └── schema.sql            # DDL database & table creation script
+│   └── schema.sql            # MySQL DDL schema and initial seed script
 ├── public/
-│   ├── index.html            # Humanoid HUD control dashboard HTML
+│   ├── index.html            # User Management Dashboard HTML UI
 │   ├── css/
-│   │   └── style.css         # Dark obsidian cyber glassmorphism design system
+│   │   └── style.css         # Modern dark theme CSS design system
 │   └── js/
-│       └── app.js            # Client-side REST integration, live log stream & Web Audio API
+│       └── app.js            # Client-side REST integration, modal, and log inspector
 ├── .env                      # Local environment configuration
 ├── .env.example              # Environment variables template
-├── .gitignore                # Git ignored patterns
-├── package.json              # Project metadata & dependencies
-├── server.js                 # Express application entry point
-└── README.md                 # Project documentation
+├── .gitignore                # Git ignore patterns
+├── package.json              # Package metadata and dependencies
+├── server.js                 # Express server entry point
+└── README.md                 # Complete project documentation
 ```
 
 ---
 
-## 🚀 Getting Started
+## 🛠️ Installation & Setup Guide
 
 ### Prerequisites
 - **Node.js**: v18.0.0 or higher
-- **MySQL**: MySQL 8.0 or PostgreSQL service running locally on port `3306`
+- **NPM**: v9.0.0 or higher
+- **MySQL**: MySQL 8.0 (Optional, SQLite persistent fallback included)
 
-### Installation
+### Quick Start
 
 1. **Clone or Navigate to Project Directory**:
    ```bash
@@ -73,9 +77,12 @@ A high-performance Node.js & Express REST API integrated with MySQL for persisti
    ```
 
 3. **Configure Environment Variables**:
-   Copy `.env.example` to `.env` and enter your local MySQL credentials:
+   Create or edit `.env` file in the root directory:
    ```ini
+   # Server Configuration
    PORT=5000
+
+   # MySQL Database Configuration
    DB_HOST=localhost
    DB_PORT=3306
    DB_USER=root
@@ -83,46 +90,94 @@ A high-performance Node.js & Express REST API integrated with MySQL for persisti
    DB_NAME=user_management_db
    ```
 
-4. **Run the Application**:
+4. **Start the Server**:
    ```bash
-   # Production mode
+   # Standard Start
    npm start
 
-   # Development mode with live reload
+   # Development Mode (Nodemon Live Reload)
    npm run dev
    ```
 
-5. **Open Dashboard**:
-   Open `http://localhost:5000` in your web browser.
+5. **Access Dashboard**:
+   Open **`http://localhost:5000`** in your browser.
 
 ---
 
 ## 📡 REST API Reference
 
-| Method | Endpoint | Description |
+| HTTP Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| **GET** | `/api/health` | Check MySQL connection health and latency |
-| **GET** | `/api/stats` | System telemetry (total users, role breakdown, status counts) |
-| **POST** | `/api/seed` | Seed default sample humanoid records into MySQL |
-| **GET** | `/api/users` | Retrieve users (supports `search`, `role`, `status`, `sortBy`, `order`, `limit`, `offset`) |
-| **GET** | `/api/users/:id` | Fetch single user details by ID |
-| **POST** | `/api/users` | Create new user entity |
-| **PUT** | `/api/users/:id` | Update existing user details |
-| **DELETE** | `/api/users/:id` | Delete user entity from MySQL |
+| **GET** | `/api/health` | Check database connection health and latency |
+| **GET** | `/api/stats` | Retrieve system telemetry (user counts, roles, statuses) |
+| **POST** | `/api/seed` | Seed default sample user records into database |
+| **GET** | `/api/users` | Retrieve users list (supports `search`, `role`, `status`, `sortBy`, `order`, `limit`, `offset`) |
+| **GET** | `/api/users/:id` | Retrieve single user record by ID |
+| **POST** | `/api/users` | Create a new user record |
+| **PUT** | `/api/users/:id` | Update an existing user record |
+| **DELETE** | `/api/users/:id` | Delete a user record by ID |
 
-### Sample JSON Body for Creating User (`POST /api/users`):
+### Example Request Payloads
+
+#### Create User (`POST /api/users`)
 ```json
 {
-  "username": "cyber_sentry",
-  "email": "sentry@cyber.io",
-  "full_name": "Aria Vance",
+  "username": "sarah_connor",
+  "email": "sarah@cyber.io",
+  "full_name": "Commander Sarah Connor",
   "role": "Cyber-Unit",
   "status": "Active",
-  "biometric_id": "BIO-4412-AV"
+  "biometric_id": "BIO-7712-SC"
+}
+```
+
+#### Successful Response (`201 Created`)
+```json
+{
+  "success": true,
+  "message": "Humanoid entity created and synchronized successfully with MySQL.",
+  "data": {
+    "id": 6,
+    "username": "sarah_connor",
+    "email": "sarah@cyber.io",
+    "full_name": "Commander Sarah Connor",
+    "role": "Cyber-Unit",
+    "status": "Active",
+    "biometric_id": "BIO-7712-SC",
+    "avatar_url": "https://api.dicebear.com/7.x/bottts/svg?seed=sarah_connor",
+    "created_at": "2026-08-20 13:05:00",
+    "updated_at": "2026-08-20 13:05:00"
+  },
+  "queryExecuted": {
+    "sql": "INSERT INTO users (username, email, full_name, role, status, biometric_id, avatar_url) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    "params": ["sarah_connor", "sarah@cyber.io", "Commander Sarah Connor", "Cyber-Unit", "Active", "BIO-7712-SC", "https://api.dicebear.com/7.x/bottts/svg?seed=sarah_connor"]
+  }
 }
 ```
 
 ---
 
-## 🛡️ License
+## 📊 Database Schema (`sql/schema.sql`)
+
+```sql
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `username` VARCHAR(50) NOT NULL UNIQUE,
+  `email` VARCHAR(100) NOT NULL UNIQUE,
+  `full_name` VARCHAR(100) NOT NULL,
+  `role` ENUM('Admin', 'User', 'Cyber-Unit', 'Android', 'Humanoid-Core') NOT NULL DEFAULT 'User',
+  `status` ENUM('Active', 'Inactive', 'Synchronized', 'Quarantined') NOT NULL DEFAULT 'Active',
+  `biometric_id` VARCHAR(100) UNIQUE,
+  `avatar_url` VARCHAR(255),
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX `idx_users_role` (`role`),
+  INDEX `idx_users_status` (`status`),
+  INDEX `idx_users_email` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
+---
+
+## 📜 License
 ISC License

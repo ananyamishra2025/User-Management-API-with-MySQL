@@ -7,7 +7,7 @@ const { initializeDatabase } = require('./config/db');
 const userRoutes = require('./routes/userRoutes');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const DEFAULT_PORT = parseInt(process.env.PORT || '5000', 10);
 
 // Middleware
 app.use(cors());
@@ -72,22 +72,47 @@ app.use((err, req, res, next) => {
   });
 });
 
+/**
+ * Starts express server with automatic port fallback if port is in use
+ */
+function listenOnPort(expressApp, port) {
+  return new Promise((resolve, reject) => {
+    const server = expressApp.listen(port);
+
+    server.once('listening', () => {
+      resolve({ server, port });
+    });
+
+    server.once('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        console.warn(`⚠️ Port ${port} is currently in use. Automatically trying port ${port + 1}...`);
+        resolve(listenOnPort(expressApp, port + 1));
+      } else {
+        reject(err);
+      }
+    });
+  });
+}
+
 // Server Initialization
 async function startServer() {
   console.log('----------------------------------------------------');
-  console.log('🤖 Starting Humanoid User Management API Service...');
+  console.log('🚀 Starting User Management REST API Service...');
   
   const dbSuccess = await initializeDatabase();
   if (!dbSuccess) {
-    console.warn('⚠️ Warning: MySQL database connection failed. Make sure MySQL service is running and credentials in .env are correct.');
+    console.warn('⚠️ Warning: Database initialization failed.');
   }
 
-  app.listen(PORT, () => {
-    console.log(`🚀 REST API & Humanoid Control Dashboard running at: http://localhost:${PORT}`);
-    console.log(`📡 Health Check URL: http://localhost:${PORT}/api/health`);
-    console.log(`📊 Stats URL: http://localhost:${PORT}/api/stats`);
+  try {
+    const { port } = await listenOnPort(app, DEFAULT_PORT);
+    console.log(`🚀 REST API & Control Dashboard running at: http://localhost:${port}`);
+    console.log(`📡 Health Check URL: http://localhost:${port}/api/health`);
+    console.log(`📊 Stats URL: http://localhost:${port}/api/stats`);
     console.log('----------------------------------------------------');
-  });
+  } catch (err) {
+    console.error('❌ Failed to start HTTP server:', err);
+  }
 }
 
 startServer();

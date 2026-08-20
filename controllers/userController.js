@@ -84,7 +84,7 @@ exports.createUser = async (req, res, next) => {
 
     return res.status(201).json({
       success: true,
-      message: 'Humanoid entity created and synchronized successfully with MySQL.',
+      message: 'User created successfully in database.',
       data: created.user,
       queryExecuted: created.executedQuery
     });
@@ -98,7 +98,7 @@ exports.updateUser = async (req, res, next) => {
   try {
     const id = parseInt(req.params.id, 10);
     if (isNaN(id)) {
-      return res.status(400).json({ success: false, message: 'Invalid Entity ID format.' });
+      return res.status(400).json({ success: false, message: 'Invalid User ID format.' });
     }
 
     const { username, email, full_name, role, status, biometric_id, avatar_url } = req.body;
@@ -125,12 +125,12 @@ exports.updateUser = async (req, res, next) => {
     });
 
     if (!updated) {
-      return res.status(404).json({ success: false, message: `Entity with ID ${id} not found.` });
+      return res.status(404).json({ success: false, message: `User with ID ${id} not found.` });
     }
 
     return res.status(200).json({
       success: true,
-      message: `Entity ID ${id} updated successfully in MySQL database.`,
+      message: `User ID ${id} updated successfully.`,
       data: updated.user,
       queryExecuted: updated.executedQuery
     });
@@ -144,17 +144,17 @@ exports.deleteUser = async (req, res, next) => {
   try {
     const id = parseInt(req.params.id, 10);
     if (isNaN(id)) {
-      return res.status(400).json({ success: false, message: 'Invalid Entity ID format.' });
+      return res.status(400).json({ success: false, message: 'Invalid User ID format.' });
     }
 
     const result = await UserModel.remove(id);
     if (!result) {
-      return res.status(404).json({ success: false, message: `Entity with ID ${id} not found.` });
+      return res.status(404).json({ success: false, message: `User with ID ${id} not found.` });
     }
 
     return res.status(200).json({
       success: true,
-      message: `Entity ID ${id} removed permanently from MySQL database.`,
+      message: `User ID ${id} removed permanently from database.`,
       deletedUser: result.deletedUser,
       queryExecuted: result.executedQuery
     });
@@ -169,7 +169,7 @@ exports.seedDatabase = async (req, res, next) => {
     const result = await UserModel.seedDefaultData();
     return res.status(200).json({
       success: true,
-      message: 'Sample Humanoid Entities seeded into MySQL database.',
+      message: 'Sample records seeded successfully into database.',
       result,
       queryExecuted: result.executedQuery
     });
