@@ -2,6 +2,8 @@
 
 A production-ready Node.js & Express REST API integrated with a relational SQL database (MySQL / SQLite) to persist user data, featuring a clean, responsive, modern web dashboard.
 
+🌐 **Live Vercel Deployment**: [https://user-management-api-with-my-sql.vercel.app](https://user-management-api-with-my-sql.vercel.app)
+
 ---
 
 ## 🚀 Key Features
