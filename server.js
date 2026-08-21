@@ -12,6 +12,16 @@ const DEFAULT_PORT = parseInt(process.env.PORT || '5000', 10);
 // Middleware
 app.use(cors());
 
+// Lazy DB initialization middleware for Vercel Serverless
+app.use(async (req, res, next) => {
+  try {
+    await initializeDatabase();
+  } catch (e) {
+    console.error('[DB Init Error]:', e);
+  }
+  next();
+});
+
 // Handle malformed JSON body errors gracefully
 app.use(express.json({
   verify: (req, res, buf, encoding) => {
@@ -94,25 +104,25 @@ function listenOnPort(expressApp, port) {
   });
 }
 
-// Server Initialization
-async function startServer() {
-  console.log('----------------------------------------------------');
-  console.log('🚀 Starting User Management REST API Service...');
-  
-  const dbSuccess = await initializeDatabase();
-  if (!dbSuccess) {
-    console.warn('⚠️ Warning: Database initialization failed.');
-  }
-
-  try {
-    const { port } = await listenOnPort(app, DEFAULT_PORT);
-    console.log(`🚀 REST API & Control Dashboard running at: http://localhost:${port}`);
-    console.log(`📡 Health Check URL: http://localhost:${port}/api/health`);
-    console.log(`📊 Stats URL: http://localhost:${port}/api/stats`);
+// Local Server Initialization (skipped on Vercel)
+if (!process.env.VERCEL) {
+  (async function startServer() {
     console.log('----------------------------------------------------');
-  } catch (err) {
-    console.error('❌ Failed to start HTTP server:', err);
-  }
+    console.log('🚀 Starting User Management REST API Service...');
+    
+    await initializeDatabase();
+
+    try {
+      const { port } = await listenOnPort(app, DEFAULT_PORT);
+      console.log(`🚀 REST API & Control Dashboard running at: http://localhost:${port}`);
+      console.log(`📡 Health Check URL: http://localhost:${port}/api/health`);
+      console.log(`📊 Stats URL: http://localhost:${port}/api/stats`);
+      console.log('----------------------------------------------------');
+    } catch (err) {
+      console.error('❌ Failed to start HTTP server:', err);
+    }
+  })();
 }
 
-startServer();
+// Export Express app for Vercel Serverless Function engine
+module.exports = app;
