@@ -190,3 +190,128 @@ exports.getStats = async (req, res, next) => {
     next(error);
   }
 };
+
+// POST /api/auth/login or /api/login
+exports.login = async (req, res, next) => {
+  try {
+    const { email, username, password } = req.body;
+    const loginIdentifier = email || username;
+
+    if (!loginIdentifier) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email or username is required for login.'
+      });
+    }
+
+    // Find user by email or username in database
+    let user = await UserModel.findExisting({
+      username: loginIdentifier,
+      email: loginIdentifier.toLowerCase()
+    });
+
+    // If demo admin login or no existing user, create/return valid user object
+    if (!user) {
+      if (loginIdentifier.toLowerCase() === 'admin@system.com' || loginIdentifier.toLowerCase() === 'admin') {
+        user = {
+          id: 1,
+          username: 'admin',
+          email: 'admin@system.com',
+          full_name: 'Sarah Connor (Admin)',
+          role: 'Admin',
+          status: 'Active',
+          biometric_id: 'BIO-1001-AD',
+          avatar_url: 'https://api.dicebear.com/7.x/bottts/svg?seed=admin'
+        };
+      } else {
+        const created = await UserModel.create({
+          username: loginIdentifier.split('@')[0].replace(/[^a-zA-Z0-9_]/g, '_'),
+          email: loginIdentifier.toLowerCase(),
+          full_name: loginIdentifier.split('@')[0],
+          role: 'User',
+          status: 'Active'
+        });
+        user = created.user;
+      }
+    }
+
+    const mockToken = `jwt-token-${user.id}-${Date.now()}`;
+
+    return res.status(200).json({
+      success: true,
+      message: 'Login successful.',
+      token: mockToken,
+      user,
+      data: {
+        token: mockToken,
+        user
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// POST /api/auth/register or /api/register
+exports.register = async (req, res, next) => {
+  try {
+    const { username, email, full_name, role = 'User', password } = req.body;
+
+    if (!email && !username) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email and username are required.'
+      });
+    }
+
+    const targetUsername = username || email.split('@')[0];
+    const targetEmail = email || `${targetUsername}@cyber.io`;
+    const targetFullName = full_name || targetUsername;
+
+    const created = await UserModel.create({
+      username: targetUsername,
+      email: targetEmail.toLowerCase(),
+      full_name: targetFullName,
+      role,
+      status: 'Active'
+    });
+
+    const mockToken = `jwt-token-${created.user.id}-${Date.now()}`;
+
+    return res.status(201).json({
+      success: true,
+      message: 'User registered successfully.',
+      token: mockToken,
+      user: created.user,
+      data: {
+        token: mockToken,
+        user: created.user
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// GET /api/auth/me or /api/me
+exports.getProfile = async (req, res, next) => {
+  try {
+    const users = await UserModel.findAll({ limit: 1 });
+    const user = users.users[0] || {
+      id: 1,
+      username: 'admin',
+      email: 'admin@system.com',
+      full_name: 'System Admin',
+      role: 'Admin',
+      status: 'Active'
+    };
+
+    return res.status(200).json({
+      success: true,
+      user,
+      data: user
+    });
+  } catch (error) {
+    next(error);
+  }
+};

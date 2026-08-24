@@ -15,6 +15,20 @@ router.get('/stats', userController.getStats);
 // Database Seeder Endpoint
 router.post('/seed', userController.seedDatabase);
 
+// Authentication Endpoints & Aliases
+router.post('/auth/login', userController.login);
+router.post('/login', userController.login);
+router.post('/users/login', userController.login);
+
+router.post('/auth/register', userController.register);
+router.post('/register', userController.register);
+router.post('/users/register', userController.register);
+
+router.get('/auth/me', userController.getProfile);
+router.get('/me', userController.getProfile);
+router.get('/profile', userController.getProfile);
+router.get('/users/me', userController.getProfile);
+
 // REST API CRUD Endpoints
 router.get('/users', userController.getUsers);
 router.get('/users/:id', userController.getUserById);

@@ -62,6 +62,7 @@ app.use((req, res, next) => {
 
 // API Routes
 app.use('/api', userRoutes);
+app.use('/', userRoutes);
 
 // SPA Fallback / Serve Frontend
 app.get('*', (req, res) => {
